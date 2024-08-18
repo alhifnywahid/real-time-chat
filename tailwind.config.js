@@ -8,10 +8,8 @@ module.exports = {
   theme: {
     extend: {
       backgroundImage: {
-        "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
-        "gradient-conic":
-          "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
-      },
+        'pattern': "url('https://static.whatsapp.net/rsrc.php/v3/yl/r/gi_DckOUM5a.png')",
+      }
     },
   },
   plugins: [],
