@@ -6,6 +6,10 @@ import { supabase } from "../../../lib/database/supabase";
 
 export const authOptions = {
 	// Configure one or more authentication providers
+	// ...
+	//NEXTAUTH_URL=https://real-time-chat-ten-wheat.vercel.app
+	//NEXTAUTH_URL=http://localhost:3000
+	secret: process.env.NEXTAUTH_SECRET,
 	providers: [
 		GithubProvider({
 			clientId: process.env.GITHUB_ID || "",
