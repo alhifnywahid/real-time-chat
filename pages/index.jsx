@@ -22,6 +22,7 @@ export default function Home() {
   const scrollRef = useRef(null);
   const [message, setMessage] = useState([]);
   const { status, data } = useSession();
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     fetch("/api/chats")
@@ -46,6 +47,12 @@ export default function Home() {
       supabase.removeChannel(channel);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    setTimeout(() => {
+      setIsLoading(!isLoading);
+    }, 3000);
   }, []);
 
   const notReady = () => {
@@ -73,86 +80,81 @@ export default function Home() {
     }
   };
 
-  return (
-    <div className="w-full h-screen fixed inset-0 z-[-1] bg-gradient-to-r from-darkGray via-darkBlue to-darkPurple animate-mesh bg-[length:200%_200%]">
-      <div className="w-full-h-full backdrop-blur-xl">
-        {status == "authenticated" ? (
-          <div
-            className={`max-w-4xl mx-auto bg-[#0b141a] h-screen w-screen bg-repeat ${inter.className} flex flex-col relative`}
-          >
-            <div className="bg-pattern bg-fixed opacity-10 absolute w-full h-full left-0 top-0"></div>
-            <div className="bg-[#202c33] z-10 w-full flex px-4 py-2 gap-3 items-center text-white font-bold justify-between">
-              <div className="flex flex-col">
-                <h1 className="">{data.user.name}</h1>
-                <p className="text-xs font-medium flex gap-2 items-center"><span className="bg-green-500 w-2 h-2 block rounded-full"></span> ... online</p>
-              </div>
-              <Image
-                src={data.user.image}
-                onClick={signOut}
-                className="w-10 h-10 rounded-full cursor-pointer"
-                alt="logo"
-                width={50}
-                height={50}
-              />
-            </div>
-            <div
-              id="chat"
-              ref={scrollRef}
-              className="w-full h-full mx-auto relative flex flex-col gap-3 py-3 overflow-y-auto"
-            >
-              {message.map((data, i) => (
-                <Fragment key={i}>
-                  <ChatItem
-                    data={data}
-                    position={
-                      data.email === data?.user?.email ? "left" : "right"
-                    }
-                  />
-                </Fragment>
-              ))}
-            </div>
-            <div className="bg-[#202c33] w-full flex p-4 gap-3 items-center z-10">
-              <span onClick={notReady} className="text-gray-500 cursor-pointer">
-                <EmotIcon />
-              </span>
-              <span onClick={notReady} className="text-gray-500 cursor-pointer">
-                <AddIcon />
-              </span>
-              <form
-                onSubmit={submitMessage}
-                className="w-full flex justify-center items-center gap-3"
-              >
-                <input
-                  className="w-full bg-transparent border rounded border-gray-600 p-2 focus:outline-none text-white"
-                  type="text"
-                  name="message"
-                  value={messageValue}
-                  onChange={(e) => setMessageValue(e.target.value)}
-                  autoComplete="off"
-                />
-                {messageValue.trim() ? (
-                  <button
-                    type="submit"
-                    className="text-gray-500 cursor-pointer"
-                  >
-                    <SendIcon />
-                  </button>
-                ) : (
-                  <span
-                    onClick={notReady}
-                    className="text-gray-500 cursor-pointer"
-                  >
-                    <AudioIcon />
-                  </span>
-                )}
-              </form>
-            </div>
-          </div>
-        ) : (
-          <Auth />
-        )}
+  return isLoading ? (
+    <div
+      className={`bg-[#0b141a] h-screen w-screen bg-repeat ${inter.className} flex flex-col relative items-center justify-center`}
+    >
+      <p className="text-white font-semibold text-xl">Loading bentar...</p>
+    </div>
+  ) : status == "authenticated" ? (
+    <div
+      className={`max-w-4xl mx-auto bg-[#0b141a] h-screen w-screen bg-repeat ${inter.className} flex flex-col relative`}
+    >
+      <div className="bg-pattern bg-fixed opacity-10 absolute w-full h-full left-0 top-0"></div>
+      <div className="bg-[#202c33] z-10 w-full flex px-4 py-2 gap-3 items-center text-white font-bold justify-between">
+        <div className="flex flex-col">
+          <h1 className="">{data.user.name}</h1>
+          <p className="text-xs font-medium flex gap-2 items-center">
+            <span className="bg-green-500 w-2 h-2 block rounded-full"></span>{" "}
+            ... online
+          </p>
+        </div>
+        <Image
+          src={data.user.image}
+          onClick={signOut}
+          className="w-10 h-10 rounded-full cursor-pointer"
+          alt="logo"
+          width={50}
+          height={50}
+        />
+      </div>
+      <div
+        id="chat"
+        ref={scrollRef}
+        className="w-full h-full mx-auto relative flex flex-col gap-3 py-3 overflow-y-auto"
+      >
+        {message.map((data, i) => (
+          <Fragment key={i}>
+            <ChatItem
+              data={data}
+              position={data.email === data?.user?.email ? "left" : "right"}
+            />
+          </Fragment>
+        ))}
+      </div>
+      <div className="bg-[#202c33] w-full flex p-4 gap-3 items-center z-10">
+        <span onClick={notReady} className="text-gray-500 cursor-pointer">
+          <EmotIcon />
+        </span>
+        <span onClick={notReady} className="text-gray-500 cursor-pointer">
+          <AddIcon />
+        </span>
+        <form
+          onSubmit={submitMessage}
+          className="w-full flex justify-center items-center gap-3"
+        >
+          <input
+            className="w-full bg-transparent border rounded border-gray-600 p-2 focus:outline-none text-white"
+            type="text"
+            name="message"
+            value={messageValue}
+            onChange={(e) => setMessageValue(e.target.value)}
+            autoComplete="off"
+          />
+          {messageValue.trim() ? (
+            <button type="submit" className="text-gray-500 cursor-pointer">
+              <SendIcon />
+            </button>
+          ) : (
+            <span onClick={notReady} className="text-gray-500 cursor-pointer">
+              <AudioIcon />
+            </span>
+          )}
+        </form>
       </div>
     </div>
+  ) : (
+    <Auth />
   );
 }
 
